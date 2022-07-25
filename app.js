@@ -21,7 +21,7 @@ app.use('/api-docs',swaggerUi.serve ,swaggerUi.setup(swaggerJsDocs))
 require('./config/dbConnet').connect()
 //the end of Database connection
 
-const port = process.env.PORT 
+const port = process.env.PORT || 3000
 app.listen(port ,()=>{
     console.log(`server is working on port ${port}`);
 })
