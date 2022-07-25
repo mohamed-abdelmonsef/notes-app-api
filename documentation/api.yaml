@@ -1,0 +1,268 @@
+swagger: '2.0'
+info:
+  title: crud apis for notes application
+  version: 1.0.0
+  description: crud apis for notes application made using node.js ,mongoDB and express
+  contact:
+    email: m6abdelmonsef@gmail.com
+  servers:
+    -url: "http://localhost:3000/"
+    description: this is my local server
+    -url: "https://api-for-note-app.herokuapp.com/"
+    description: this is heroku server    
+schemes: [https,http]
+produces:
+  - application/json
+consumes:
+  - application/json
+
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: x-access-token
+    in: header
+##################################################################
+tags:
+  - name: Auth
+  - name: User home
+  - name: Note
+
+paths:
+
+########  registeration api
+  /register:
+    post:
+      summary: api for adding new user
+      tags:
+        - Auth 
+      parameters:
+        - in: body
+          name: user
+          required: true
+          description: user inputs
+          schema:
+            $ref: '#/components/schemas/userRegister'
+      responses:
+        201:
+          description: the user registered successfully
+          content:
+            application/json:
+              $ref: '#/components/schemas/userRegister'
+        500:
+          description: db or server error (unexpected error)
+        422:
+          description: invalid data  
+          content:
+            application/json:
+              $ref: '#/components/schemas/userRegister'
+
+######### login api
+  /login:
+    post:
+      summary: api for logging in  
+      tags:
+        - Auth   
+      parameters:
+        - in: body
+          name: user
+          required: true
+          description: user inputs
+          schema:
+            $ref: '#/components/schemas/userLogin'
+      responses:
+        200:
+          description: the user logged in successfully
+          content:
+            application/json:
+              $ref: '#/components/schemas/userLogin'
+        401:
+          description: invalid password
+          content:      
+            application/json:
+              $ref: '#/components/schemas/userLogin'                
+        404:
+          description: user not found
+          content:      
+            application/json:
+              $ref: '#/components/schemas/userLogin'
+        422:
+          description: invalid data  
+          content:
+            application/json:
+              $ref: '#/components/schemas/userLogin'              
+        500:
+          description: db or server error (unexpected error)
+                 
+
+########## retrive all notes of user
+  /displayNotes:
+    get:
+      security:
+        - Bearer: []
+      summary: get all notes of logged in user
+      tags:
+        - User home
+      responses:
+        200:
+          description: notes retrived successfully
+          content:
+            application/json:
+              $ref: '#/components/schemas/note'
+        500:
+          description: db or server error (unexpected error) 
+        401:
+          description: Unauthorized user    
+        403:
+          description: No token provided!
+
+####### add new note
+  /addNote:
+    post:
+      security:
+        - Bearer: []
+      summary: add new note
+      tags:
+        - Note
+      parameters:
+        - in: body
+          name: note
+          required: true
+          description: note details
+          schema:
+            $ref: '#/components/schemas/note'
+      responses:
+        200:
+          description: note added successfully
+          content:
+            application/json:
+              $ref: '#/components/schemas/note'
+        500:
+          description: db or server error (unexpected error) 
+        401:
+          description: Unauthorized user    
+        403:
+          description: No token provided!
+          
+###### delete note by id
+  /deleteNote/{id}:
+    delete:
+      security:
+        - Bearer: []
+      summary: delete note by id
+      tags:
+        - Note
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: id of note
+          schema:
+            type: string
+      responses:
+        200:
+          description: note deleted successfully
+        404:
+          description: this is wrong id or this note not exist  
+        500:
+          description: db or server error (unexpected error) 
+        401:
+          description: Unauthorized user    
+        403:
+          description: No token provided!          
+
+##### edit note by id
+  /editNote/{id}:
+    put:
+      security:
+        - Bearer: []
+      summary: note updated successfully
+      tags:
+        - Note
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: id of note
+          schema:
+            type: string
+        - in: body
+          name: note
+          description: note updated details
+          schema:
+            $ref: '#/components/schemas/note'
+      responses:
+        200:
+          description: note updated successfully
+        404:
+          description: this is wrong id or this note not exist            
+        500:
+          description: db or server error (unexpected error) 
+        401:
+          description: Unauthorized user    
+        403:
+          description: No token provided!          
+
+
+components:
+  schemas:
+
+## user registeration schema    
+    userRegister:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: user name  
+        email:
+          type: string
+          description: user email
+        password:
+          type: string
+          description: password must contain numbers
+        confirmPass:
+          type: string
+          description: confirmation password  
+      example:
+        name: zain
+        email: mo@gmail.com
+        password: aa1
+        confirmPass: aa1  
+
+#### user login schema
+    userLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties: 
+        email:
+          type: string
+          description: user email
+        password:
+          type: string
+          description: password must contain numbers
+      example:
+        email: mo@gmail.com
+        password: aa1
+
+## note schema
+    note:
+      type: object
+      required:
+        - title
+        - desc
+      properties: 
+        title:
+          type: string
+          description: note title
+        desc:
+          type: string
+          description: description of the note
+      example:
+        title: hello note
+        desc: hi i am the description of this note
