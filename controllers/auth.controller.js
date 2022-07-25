@@ -21,7 +21,7 @@ exports.register = (req,res)=>{
             to: email, 
             subject: "Hello ✔",
             text: "Hello world?", 
-            html: `<h1><a href='http://localhost:3000/verifyEmail/${token}'> please click here to confirm your email.. </a></h1>`, // html body
+            html: `<h1><a href='https://notes-app-apii.herokuapp.com/verifyEmail/${token}'> please click here to confirm your email.. </a></h1>`, // html body
         }
         mailer.sendMail(emailContent,(err, res)=> {
             if (err) { 
