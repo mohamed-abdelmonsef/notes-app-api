@@ -82,7 +82,7 @@ exports.login = (req,res)=>{
         if(!match){
             return res.status(401).send({message:"invalid pass",accessToken:null})
         }
-        let token = jwt.sign({id:user._id},Secret_Key,{expiresIn:86400})
+        let token = await jwt.sign({id:user._id},Secret_Key,{expiresIn:86400})
         res.status(200).send({
             message:"logged in successfully",
             email:user.email,
